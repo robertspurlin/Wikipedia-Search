@@ -1,6 +1,6 @@
 $(document).ready(function() {
 	
-	// Setup definitions
+// Setup definitions
     $(window).resize(function() {
         var homeHeight = $(this).height();
         var hCenter = (($(this).height() /2) - ($("#box").height() /2));
@@ -8,7 +8,7 @@ $(document).ready(function() {
         $("#box").css("margin-top", hCenter);
     }).resize();
 
-    // API Integration. Credit to Forismatic https://forismatic.com
+// API Integration. Credit to Forismatic https://forismatic.com
     $("#quote-button").on("click", function() {
     	$.getJSON("http://api.forismatic.com/api/1.0/?method=getQuote&format=jsonp&lang=en&jsonp=?").done(update).fail(error);
 
@@ -38,9 +38,17 @@ $(document).ready(function() {
     	var html = quote + author;
 
     	$("#quote").html(html);
+
+    	// Twitter Link Generator
+		var spaceToLink = html.split(' ').join('%20');
+		var twitterLink = ' href =' + '"' + 'https://twitter.com/intent/tweet?text=' + spaceToLink + '"';
+		twitterLink = twitterLink.replace('<br%20/></a>', '');
+		var button = '<a' + twitterLink + '><i class="fa fa-twitter" aria-hidden="true"></i> Tweet</a>';
+		$(".twitter").html(button);
     }
 
     function error() {
     	$("#quote").html("There has been an error." + "<br />" + "Try again later!" + "<br />");
     }
+
 });
