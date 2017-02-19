@@ -40,10 +40,9 @@ $(document).ready(function() {
     	$("#quote").html(html);
 
     	// Twitter Link Generator
-		var spaceToLink = html.split(' ').join('%20');
-		var twitterLink = ' href =' + '"' + 'https://twitter.com/intent/tweet?text=' + spaceToLink + '"';
-		twitterLink = twitterLink.replace('<br%20/></a>', '');
-		var button = '<a' + twitterLink + '><i class="fa fa-twitter" aria-hidden="true"></i> Tweet</a>';
+		var twitterQuote = JSON.stringify(response.quoteText).replace(/"/g, '') + author;
+		var twitterLink = ' href =' + '"' + 'https://twitter.com/intent/tweet?text=' + twitterQuote + '"';
+		var button = '<a' + twitterLink + 'target="_blank"' + '><i class="fa fa-twitter" aria-hidden="true"></i> Tweet</a>';
 		$(".twitter").html(button);
     }
 
