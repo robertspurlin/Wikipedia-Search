@@ -1,53 +1,54 @@
-$(document).ready(function() {
-	
-// Setup definitions
-    $(window).resize(function() {
-        var homeHeight = $(this).height();
-        var hCenter = (($(this).height() /2) - ($("#box").height() /2));
-        $("#background").height(homeHeight);
-        $("#box").css("margin-top", hCenter);
-    }).resize();
+$(document).ready(function() {	
+    
+    var hCenter = (($(this).height() /2) - ($("#center").height() /2));
+    $("#center").css("margin-top", hCenter);
 
-// API Integration. Credit to Forismatic https://forismatic.com
-    $("#quote-button").on("click", function() {
-    	$.getJSON("http://api.forismatic.com/api/1.0/?method=getQuote&format=jsonp&lang=en&jsonp=?").done(update).fail(error);
-
-    	// Random Color Generator
-    	var letters = '0123456789ABCDEF';
-    	var randomColor = '#';
-    	for (var i = 0; i < 6; i++ ) {
-        	randomColor += letters[Math.floor(Math.random() * 16)];
-   	 	}
-  		
-  		$(".color-change").css("color", randomColor);
-  		$("#background").css("background-color", randomColor);
-
-    });
-
-    function update(response) {
-    	var quote = JSON.stringify(response.quoteText) + "<br />";
-    	quote = quote.replace(/"/g, '');
-
-    	var author = "-" + JSON.stringify(response.quoteAuthor);
-    	author = author.replace(/"/g, '');
-    	
-    	if (author == "-") {
-    		author += "Unknown";
-    	}
-
-    	var html = quote + author;
-
-    	$("#quote").html(html);
-
-    	// Twitter Link Generator
-		var twitterQuote = JSON.stringify(response.quoteText).replace(/"/g, '') + author;
-		var twitterLink = ' href =' + '"' + 'https://twitter.com/intent/tweet?text=' + twitterQuote + '"';
-		var button = '<a' + twitterLink + 'target="_blank"' + '><i class="fa fa-twitter" aria-hidden="true"></i> Tweet</a>';
-		$(".twitter").html(button);
+    if (typeof html == "undefined") {
+        $(window).resize(function() {
+            var homeHeight = $(this).height();
+            $("#background").height(homeHeight);
+        }).resize(); 
     }
-
-    function error() {
-    	$("#quote").html("There has been an error." + "<br />" + "Try again later!" + "<br />");
-    }
-
 });
+
+var url = "https://en.wikipedia.org/w/api.php?callback=?";
+var link, details, html = "";
+
+$("#search").keypress(function(e) {
+    if (e.which == 13) {
+        getResults();
+    }
+});
+
+function getResults() {
+    
+    $.getJSON(url, {
+        "action": "query",
+        "format": "json",
+        "prop": "info|extracts",
+        "list": "",
+        "continue": "",
+        "titles": "",
+        "generator": "search",
+        "inprop": "url",
+        "exsentences": "3",
+        "exlimit": "max",
+        "exintro": 1,
+        "explaintext": 1,
+        "gsrsearch": "potato",
+        "gsrprop": "",
+        "gsrsearch": $("#search").val()
+    
+    }).done(function(response) {
+        $(".results").empty();
+        $("#center").css("margin-top", 0);
+        var pages = response.query.pages;
+        for (results in pages) {
+            link = "<a href='" + pages[results].fullurl + "'target='_blank'</a>";
+            details = "<h4>" + pages[results].title + "</h4><br /><p>" + pages[results].extract + "</p>";
+            html = link + "<div class='well'>" + details + "</div>"
+            $(".results").append(html);
+        };
+        $('#background').height($('#center').height());      
+      })
+    }
